@@ -13,9 +13,9 @@ import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from './AppSidebarNav'
 
-import { logo } from 'src/assets/brand/logo'
+//import { logo } from 'https://wabjar.com/vansaleslogo/wabjar.jpg'
 //import { logo } from 'src/assets/brand/pogo.js'
-import { sygnet } from 'src/assets/brand/sygnet'
+//import { sygnet } from 'src/assets/brand/sygnet'
 
 // sidebar nav config
 import navigation from '../_nav'
@@ -24,7 +24,6 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
-console.log(logo)
 
   return (
     <CSidebar
@@ -43,10 +42,10 @@ console.log(logo)
           <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />*/}
           <div style={{display:"flex"}}>
             <div style={{paddingTop:'2px'}}>
-              <img src="src/assets/brand/logo.jpg" height={32} width={32}/>
+              <img src="https://wabjar.com/vansaleslogo/wabjar.jpg" height={32} width={32}/>
             </div>
             <div style={{paddingLeft:'12px'}}>
-              <h3>WABJAR</h3>
+              <h3>JAR</h3>
             </div>
           </div>
         </CSidebarBrand>

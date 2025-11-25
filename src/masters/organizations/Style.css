@@ -1,0 +1,16 @@
+.resizable-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .resizable-header {
+    resize: horizontal;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 100px;
+  }
+
+  .select-invalid .react-select__control {
+    border-color: red !important;
+    box-shadow: 0 0 0 1px red !important;
+  }
+  

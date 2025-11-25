@@ -8,6 +8,10 @@ export default defineConfig(() => {
     base: './',
     build: {
       outDir: 'build',
+      minify: false,
+      rollupOptions: {
+        treeshake: false,
+      }
     },
     css: {
       postcss: {
@@ -41,6 +45,9 @@ export default defineConfig(() => {
     },
     server: {
       port: 3000,
+      watch: {
+        usePolling: true,
+      },
       proxy: {
         // https://vitejs.dev/config/server-options.html
       },

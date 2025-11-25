@@ -1,0 +1,10 @@
+.resizable-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .resizable-header {
+    resize: horizontal;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 100px;
+  }

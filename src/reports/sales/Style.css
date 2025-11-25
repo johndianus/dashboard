@@ -1,0 +1,62 @@
+.resizable-table-wrapper {
+  overflow-x: auto;
+}
+
+.resizable-header {
+  resize: horizontal;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  #printable-area,
+  #printable-area * {
+    visibility: visible !important;
+  }
+
+  #printable-area {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    z-index: 9999 !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Prevent repeating modal structure */
+  .c-modal,
+  .c-modal-dialog,
+  .c-modal-content,
+  .modal,
+  .modal-dialog,
+  .modal-content {
+    all: unset !important;
+    display: block !important;
+    position: static !important;
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .c-modal-header,
+  .c-modal-footer,
+  .modal-header,
+  .modal-footer {
+    display: none !important;
+  }
+
+  /* Optional: prevent header/footer print margins */
+  @page {
+    margin: 10mm;
+  }
+}
+

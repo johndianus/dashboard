@@ -51,9 +51,49 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+const CustomerReport = React.lazy(() => import('./masters/customers/CustomerReport'))
+const CustomerForm = React.lazy(() => import('./masters/customers/CustomerForm'))
+
+const OrganizationReport = React.lazy(() => import('./masters/organizations/OrganizationReport'))
+const OrganizationForm = React.lazy(() => import('./masters/organizations/OrganizationForm'))
+
+const ServiceReport = React.lazy(() => import('./masters/services/ServiceReport'))
+const ServiceForm = React.lazy(() => import('./masters/services/ServiceForm'))
+
+const UserReport = React.lazy(() => import('./masters/users/UserReport'))
+const UserForm = React.lazy(() => import('./masters/users/UserForm'))
+
+const SalesEntry = React.lazy(() => import('./transactions/sales/SalesEntry'))
+
+const OpportunityEntry = React.lazy(() => import('./transactions/opportunity/OpportunityEntry'))
+const Opportunities = React.lazy(() => import('./transactions/opportunity/OpportunityReport'))
+const OpportunityView = React.lazy(() => import('./transactions/opportunity/OpportunityView'))
+
+const SalesReport = React.lazy(() => import('./reports/sales/SalesReport'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  
+  { path: '/masters/customers', name: 'Customers', element: CustomerReport },
+  { path: '/masters/customer', name: 'Customer', element: CustomerForm },
+  { path: '/masters/organizations', name: 'Organizations', element: OrganizationReport },
+  { path: '/masters/organization', name: 'Organization', element: OrganizationForm },
+
+  { path: '/masters/services', name: 'Services', element: ServiceReport },
+  { path: '/masters/service', name: 'Service', element: ServiceForm },
+
+  { path: '/masters/users', name: 'Users', element: UserReport },
+  { path: '/masters/user', name: 'User', element: UserForm },
+
+  { path: '/transactions/sales', name: 'Sales Entry', element: SalesEntry },
+
+  { path: '/transactions/opportunity', name: 'Opportunity Entry', element: OpportunityEntry },
+  { path: '/reports/opportunities', name: 'Opportunities', element: Opportunities },
+  { path: '/transactions/opportunityview', name: 'Opportunity View', element: OpportunityView },
+
+  { path: '/reports/sales', name: 'Sales Report', element: SalesReport },
+
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },

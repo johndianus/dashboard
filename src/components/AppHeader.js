@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -27,6 +27,7 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import { getSessionValue } from '../utilities/session'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -34,13 +35,29 @@ const AppHeader = () => {
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const [cmpName, setCmpName] = useState()
 
   useEffect(() => {
+    const fetchCompany = async () => {
+      const company = await getSessionValue("company");
+      setCmpName(company?.data[0]?.name);
+    };
+  
     document.addEventListener('scroll', () => {
       headerRef.current &&
-        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
-    })
-  }, [])
+        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
+    });
+  
+    fetchCompany();
+  
+    return () => {
+      // Cleanup the event listener when the component unmounts
+      document.removeEventListener('scroll', () => {
+        headerRef.current &&
+          headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
+      });
+    };
+  }, []);
 
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
@@ -54,15 +71,15 @@ const AppHeader = () => {
         <CHeaderNav className="d-none d-md-flex">
           <CNavItem>
             <CNavLink to="/dashboard" as={NavLink}>
-              Dashboard
+              {cmpName}
             </CNavLink>
           </CNavItem>
-          <CNavItem>
+          {/*<CNavItem>
             <CNavLink href="#">Users</CNavLink>
           </CNavItem>
           <CNavItem>
             <CNavLink href="#">Settings</CNavLink>
-          </CNavItem>
+          </CNavItem>*/}
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
           <CNavItem>

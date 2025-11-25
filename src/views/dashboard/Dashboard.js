@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import classNames from 'classnames'
+import { dba, fetchJson, baseURL } from '../../utilities/api';
 
 import {
   CAvatar,
@@ -53,6 +54,7 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
+import MainChartNew from './MainChartNew'
 
 const Dashboard = () => {
   const progressExample = [
@@ -176,29 +178,99 @@ const Dashboard = () => {
     },
   ]
 
+  const [selPeriod, setSelPeriod] = useState("Month")
+  const [selView, setSelView] = useState("Amount")
+
+  const [stats, setStats] = useState({
+    customerCount: null,
+    vanStockCount: null,
+    vanCount: null,
+    sales: { dates: [], values: [] },
+    receipts: { dates: [], values: [] },
+  });
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        /*const [customerData, vanStockData, vanData, salesData, receiptsData, outstandingData, lastSalesCountData] = await Promise.all([
+          fetchJson(`${baseURL}count?db=${dba}&table=customers`),
+          fetchJson(`${baseURL}count?db=${dba}&table=vanstock`),
+          fetchJson(`${baseURL}count?db=${dba}&table=van`),
+          fetchJson(`${baseURL}dailysales?db=${dba}`),
+          fetchJson(`${baseURL}dailyreceipts?db=${dba}`),
+          fetchJson(`${baseURL}outstandings?db=${dba}&total=true`),
+          fetchJson(`${baseURL}dailyvansales?db=${dba}&period=lastsalescount`),
+        ]);*/
+        const [customerData, vanStockData, vanData, salesData, receiptsData, outstandingData, lastSalesCountData] = [[],[],[],[],[],[],[]]; // Temporary disable API calls
+        const sales = salesData?.data ?? [];
+        const receipts = receiptsData?.data ?? [];
+        const getLast7 = (data, key) => data?.slice(-7).map(item => key === 'amount' ? parseFloat(item.total_amount) : item.vchdate);
+
+        setStats({
+          customerCount: customerData?.data?.count ?? 0,
+          vanStockCount: vanStockData?.data?.count ?? 0,
+          vanCount: vanData?.data?.count ?? 0,
+          lastSalesCount: lastSalesCountData?.data,
+          sales: {
+            dates: getLast7(sales, 'date'),
+            values: getLast7(sales, 'amount'),
+            count: sales.length > 0 ? sales[sales.length-1].total_vouchers : 0,
+          },
+          receipts: {
+            dates: getLast7(receipts, 'date'),
+            values: getLast7(receipts, 'amount'),
+          },
+          outstanding: outstandingData?.data?.reduce((sum, item) => sum + parseFloat(item.total), 0),
+        });
+      } catch (err) {
+        console.error("Error loading dashboard data:", err);
+        setError("Failed to load dashboard data.");
+      }
+    };
+
+    fetchData();
+  }, [baseURL, dba]);
+
+//console.log(stats);
+
   return (
     <>
-      <WidgetsDropdown className="mb-4" />
+      <WidgetsDropdown className="mb-4" stats={stats}/>
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
             <CCol sm={5}>
               <h4 id="traffic" className="card-title mb-0">
-                Traffic
+                Sales 
               </h4>
-              <div className="small text-body-secondary">January - July 2023</div>
+              <div className="small text-body-secondary">&nbsp;</div>
             </CCol>
             <CCol sm={7} className="d-none d-md-block">
               <CButton color="primary" className="float-end">
                 <CIcon icon={cilCloudDownload} />
               </CButton>
               <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
+                {['Count', 'Amount'].map((value) => (
                   <CButton
                     color="outline-secondary"
                     key={value}
                     className="mx-0"
-                    active={value === 'Month'}
+                    onClick={()=>setSelView(value)}
+                    active={value === selView}
+                  >
+                    {value}
+                  </CButton>
+                ))}
+              </CButtonGroup>              
+              <CButtonGroup className="float-end me-3">
+                {['Day', 'Week', 'Month'].map((value) => (
+                  <CButton
+                    color="outline-primary"
+                    key={value}
+                    className="mx-0"
+                    onClick={()=>setSelPeriod(value)}
+                    active={value === selPeriod}
                   >
                     {value}
                   </CButton>
@@ -206,9 +278,9 @@ const Dashboard = () => {
               </CButtonGroup>
             </CCol>
           </CRow>
-          <MainChart />
+          <MainChartNew selPeriod={selPeriod} selView={selView}/>
         </CCardBody>
-        <CCardFooter>
+        {/*<CCardFooter>
           <CRow
             xs={{ cols: 1, gutter: 4 }}
             sm={{ cols: 2 }}
@@ -231,113 +303,32 @@ const Dashboard = () => {
               </CCol>
             ))}
           </CRow>
-        </CCardFooter>
+        </CCardFooter>*/}
       </CCard>
-      <WidgetsBrand className="mb-4" withCharts />
+      {/*<WidgetsBrand className="mb-4" withCharts />*/}
+      {/*}
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
+            <CCardHeader>Opportunities</CCardHeader>
             <CCardBody>
-              <CRow>
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-info py-1 px-3">
-                        <div className="text-body-secondary text-truncate small">New Clients</div>
-                        <div className="fs-5 fw-semibold">9,123</div>
-                      </div>
-                    </CCol>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                        <div className="text-body-secondary text-truncate small">
-                          Recurring Clients
-                        </div>
-                        <div className="fs-5 fw-semibold">22,643</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-                  <hr className="mt-0" />
-                  {progressGroupExample1.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-prepend">
-                        <span className="text-body-secondary small">{item.title}</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="info" value={item.value1} />
-                        <CProgress thin color="danger" value={item.value2} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                        <div className="text-body-secondary text-truncate small">Pageviews</div>
-                        <div className="fs-5 fw-semibold">78,623</div>
-                      </div>
-                    </CCol>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                        <div className="text-body-secondary text-truncate small">Organic</div>
-                        <div className="fs-5 fw-semibold">49,123</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-
-                  <hr className="mt-0" />
-
-                  {progressGroupExample2.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">{item.value}%</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="warning" value={item.value} />
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="mb-5"></div>
-
-                  {progressGroupExample3.map((item, index) => (
-                    <div className="progress-group" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">
-                          {item.value}{' '}
-                          <span className="text-body-secondary small">({item.percent}%)</span>
-                        </span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="success" value={item.percent} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
-              </CRow>
-
               <br />
-
+              {    
               <CTable align="middle" className="mb-0 border" hover responsive>
                 <CTableHead className="text-nowrap">
                   <CTableRow>
                     <CTableHeaderCell className="bg-body-tertiary text-center">
                       <CIcon icon={cilPeople} />
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Customer</CTableHeaderCell>
                     <CTableHeaderCell className="bg-body-tertiary text-center">
                       Country
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Progress</CTableHeaderCell>
                     <CTableHeaderCell className="bg-body-tertiary text-center">
-                      Payment Method
+                      Status
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Follow on</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -375,11 +366,11 @@ const Dashboard = () => {
                     </CTableRow>
                   ))}
                 </CTableBody>
-              </CTable>
+              </CTable>}
             </CCardBody>
           </CCard>
         </CCol>
-      </CRow>
+      </CRow>*/}
     </>
   )
 }
